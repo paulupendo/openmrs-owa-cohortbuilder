@@ -22,7 +22,9 @@ class PatientComponent extends Component {
       selectedAttribute: '',
       gender: 'all',
       minAge: '',
-      maxAge: ''
+      maxAge: '',
+      ageError: false,
+      // ageErrorObject: {}
     };
     this.jsonHelper = new JSONHelper();
     this.searchDemographics = this.searchDemographics.bind(this);
@@ -37,6 +39,7 @@ class PatientComponent extends Component {
     this.handleSelectAttribute = this.handleSelectAttribute.bind(this);
     this.handleSelectGender = this.handleSelectGender.bind(this);
     this.handleSelectAge = this.handleSelectAge.bind(this);
+    this.handleAgeValidation = this.handleAgeValidation.bind(this);
   }
 
   componentDidMount(props) {
@@ -238,9 +241,21 @@ class PatientComponent extends Component {
   handleSelectGender(event) {
     this.setState({ gender: event.target.value });
   }
-
+  handleAgeValidation(age) {
+      if (age >= 0 && age <= 200 && typeof(age)==="string") {
+        return true;
+      }
+      return false;
+  }
   handleSelectAge(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    // event.target.value >= 0 ? this.setState({ [event.target.id]: event.target.value, ageError: false }) : this.setState({ageError: true});
+    console.log(typeof(event.target.value))
+    if(this.handleAgeValidation(event.target.value)) {
+      this.setState({ [event.target.id]: event.target.value, ageError: false })
+    } else {
+      this.setState({ageError: true});
+    }
+
   }
 
   /**
@@ -336,7 +351,7 @@ class PatientComponent extends Component {
         </option>
       );
     });
-    const { startDate, endDate, selectedAttribute } = this.state;
+    const { startDate, endDate, selectedAttribute, ageError } = this.state;
     return (
       <div>
         <h3>Search By Demographic</h3>
@@ -358,8 +373,9 @@ class PatientComponent extends Component {
             <div className="col-sm-1">
               <span className="inline-label">Between:</span>
             </div>
-            <div className="col-sm-3">
+            <div className={ageError ? "col-sm-3 error" : "col-sm-3"}>
               <input name="minage" id="minAge" className="form-control" onChange={this.handleSelectAge} value={this.minAge} />
+              <span>{ageError && 'There is an error'}</span>
             </div>
             <span className="inline-label">And:</span>
             <div className="col-sm-3">
@@ -428,7 +444,7 @@ class PatientComponent extends Component {
 
           <div className="form-group">
             <div className="col-sm-offset-2 col-sm-6">
-              <button type="submit" onClick={this.searchDemographics} className="btn btn-success">Search</button>
+              <button type="submit" onClick={this.searchDemographics} className="btn btn-success" disabled={ageError}>Search</button>
               <button onClick={this.resetSearchByDemographics} className="btn btn-default cancelBtn">Reset</button>
             </div>
           </div>
