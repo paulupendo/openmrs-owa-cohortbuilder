@@ -23,8 +23,11 @@ class PatientComponent extends Component {
       gender: 'all',
       minAge: '',
       maxAge: '',
-      ageError: false,
-      // ageErrorObject: {}
+      ageErrorObject: {
+        status: false,
+        minAgeErrorMsg: '',
+        maxAgeErrorMsg: '',
+      }
     };
     this.jsonHelper = new JSONHelper();
     this.searchDemographics = this.searchDemographics.bind(this);
@@ -241,21 +244,61 @@ class PatientComponent extends Component {
   handleSelectGender(event) {
     this.setState({ gender: event.target.value });
   }
-  handleAgeValidation(age) {
-      if (age >= 0 && age <= 200 && typeof(age)==="string") {
+
+  /**
+   * This method handles the validation of the user input, it ensure no age below 0
+   * and above 200 can be use to filter the search. 
+   * 
+   * @param {interger} age This is the age the user inputs
+   * @param {string} identifier This is the ID of the age 
+   * @returns 
+   * @memberof PatientComponent
+   */
+  handleAgeValidation(age, identifier) {
+      if (age >= 0 && age <= 200 && typeof(age)==="string" && age !== '-0') {
+        this.setState((previousState) => {
+          previousState.ageErrorObject[`${identifier}ErrorMsg`] = '';
+          return previousState;
+        });
         return true;
+      } else if(age < 0 || age === '-0' || age === -0) {
+        this.setState((previousState) => {
+          identifier === 'minAge' ?
+          previousState.ageErrorObject.minAgeErrorMsg = 'The age must be greater than 0' : 
+          previousState.ageErrorObject.maxAgeErrorMsg = 'The age must be greater than 0';
+          return previousState;
+        });
+      } else if(age > 200) {
+        this.setState((previousState) => {
+          identifier === 'minAge' ?
+          previousState.ageErrorObject.minAgeErrorMsg = 'The age must be less than 200' :
+          previousState.ageErrorObject.maxAgeErrorMsg = 'The age must be less than 200';
+          return previousState;
+        });
       }
       return false;
   }
-  handleSelectAge(event) {
-    // event.target.value >= 0 ? this.setState({ [event.target.id]: event.target.value, ageError: false }) : this.setState({ageError: true});
-    console.log(typeof(event.target.value))
-    if(this.handleAgeValidation(event.target.value)) {
-      this.setState({ [event.target.id]: event.target.value, ageError: false })
-    } else {
-      this.setState({ageError: true});
-    }
 
+  /**
+   * This method copies the value of the age field for the age HTML and copies
+   * it to the component state.
+   * 
+   * @param {object} event The HTML event
+   * @memberof PatientComponent
+   */
+  handleSelectAge(event) {
+    if (this.handleAgeValidation(event.target.value, event.target.id)) {
+      this.setState({ [event.target.id]: event.target.value });
+      this.setState((previousState) => {
+          previousState.ageErrorObject.status = false;
+          return previousState;
+        });
+    } else {
+      this.setState((previousState) => {
+          previousState.ageErrorObject.status = true;
+          return previousState;
+        });
+    }
   }
 
   /**
@@ -351,7 +394,7 @@ class PatientComponent extends Component {
         </option>
       );
     });
-    const { startDate, endDate, selectedAttribute, ageError } = this.state;
+    const { startDate, endDate, selectedAttribute, ageErrorObject } = this.state;
     return (
       <div>
         <h3>Search By Demographic</h3>
@@ -373,13 +416,14 @@ class PatientComponent extends Component {
             <div className="col-sm-1">
               <span className="inline-label">Between:</span>
             </div>
-            <div className={ageError ? "col-sm-3 error" : "col-sm-3"}>
+            <div className={ageErrorObject ? "col-sm-3 error" : "col-sm-3"}>
               <input name="minage" id="minAge" className="form-control" onChange={this.handleSelectAge} value={this.minAge} />
-              <span>{ageError && 'There is an error'}</span>
+              <span>{ageErrorObject.status && ageErrorObject.minAgeErrorMsg}</span>
             </div>
             <span className="inline-label">And:</span>
-            <div className="col-sm-3">
+            <div className={ageErrorObject ? "col-sm-3 error" : "col-sm-3"}>
               <input name="maxage" id="maxAge" className="form-control" onChange={this.handleSelectAge} value={this.maxAge} />
+              <span>{ageErrorObject.status && ageErrorObject.maxAgeErrorMsg}</span>
             </div>
           </div>
           {startDate && !endDate || endDate && !startDate ?
@@ -444,7 +488,7 @@ class PatientComponent extends Component {
 
           <div className="form-group">
             <div className="col-sm-offset-2 col-sm-6">
-              <button type="submit" onClick={this.searchDemographics} className="btn btn-success" disabled={ageError}>Search</button>
+              <button type="submit" onClick={this.searchDemographics} className="btn btn-success" disabled={ageErrorObject.status}>Search</button>
               <button onClick={this.resetSearchByDemographics} className="btn btn-default cancelBtn">Reset</button>
             </div>
           </div>
