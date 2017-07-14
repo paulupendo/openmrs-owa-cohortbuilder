@@ -24,7 +24,8 @@ class PatientComponent extends Component {
       minAge: '',
       maxAge: '',
       ageErrorObject: {
-        status: false,
+        minAgeStatus: false,
+        maxAgeStatus: false,
         minAgeErrorMsg: '',
         maxAgeErrorMsg: '',
       }
@@ -289,13 +290,23 @@ class PatientComponent extends Component {
   handleSelectAge(event) {
     if (this.handleAgeValidation(event.target.value, event.target.id)) {
       this.setState({ [event.target.id]: event.target.value });
+      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject.status = false;
+          previousState.ageErrorObject.minAgeStatus = false;
+          return previousState;
+        }) : 
+        this.setState((previousState) => {
+          previousState.ageErrorObject.maxAgeStatus = false;
           return previousState;
         });
     } else {
+      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject.status = true;
+          previousState.ageErrorObject.minAgeStatus = true;
+          return previousState;
+        }) :
+        this.setState((previousState) => {
+          previousState.ageErrorObject.maxAgeStatus = true;
           return previousState;
         });
     }
@@ -417,13 +428,13 @@ class PatientComponent extends Component {
               <span className="inline-label">Between:</span>
             </div>
             <div className={ageErrorObject ? "col-sm-3 error" : "col-sm-3"}>
-              <input name="minage" id="minAge" className="form-control" onChange={this.handleSelectAge} value={this.minAge} />
-              <span>{ageErrorObject.status && ageErrorObject.minAgeErrorMsg}</span>
+              <input name="minage" id="minAge" className="form-control" onChange={this.handleSelectAge} value={this.minAge} type="number" />
+              <span>{ageErrorObject.minAgeStatus && ageErrorObject.minAgeErrorMsg}</span>
             </div>
             <span className="inline-label">And:</span>
             <div className={ageErrorObject ? "col-sm-3 error" : "col-sm-3"}>
-              <input name="maxage" id="maxAge" className="form-control" onChange={this.handleSelectAge} value={this.maxAge} />
-              <span>{ageErrorObject.status && ageErrorObject.maxAgeErrorMsg}</span>
+              <input name="maxage" id="maxAge" className="form-control" onChange={this.handleSelectAge} value={this.maxAge} type="number" />
+              <span>{ageErrorObject.maxAgeStatus && ageErrorObject.maxAgeErrorMsg}</span>
             </div>
           </div>
           {startDate && !endDate || endDate && !startDate ?
@@ -488,7 +499,7 @@ class PatientComponent extends Component {
 
           <div className="form-group">
             <div className="col-sm-offset-2 col-sm-6">
-              <button type="submit" onClick={this.searchDemographics} className="btn btn-success" disabled={ageErrorObject.status}>Search</button>
+              <button type="submit" onClick={this.searchDemographics} className="btn btn-success" disabled={ageErrorObject.minAgeStatus || ageErrorObject.maxAgeStatus}>Search</button>
               <button onClick={this.resetSearchByDemographics} className="btn btn-default cancelBtn">Reset</button>
             </div>
           </div>
