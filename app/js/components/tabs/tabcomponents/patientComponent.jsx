@@ -300,25 +300,16 @@ class PatientComponent extends Component {
    * @memberof PatientComponent
    */
   handleSelectAge(event) {
+    const identifier = event.target.id;
     if (this.handleAgeValidation(event.target.value, event.target.id)) {
       this.setState({ [event.target.id]: event.target.value });
-      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject.minAgeStatus = false;
-          return previousState;
-        }) : 
-        this.setState((previousState) => {
-          previousState.ageErrorObject.maxAgeStatus = false;
+          previousState.ageErrorObject[`${identifier}Status`] = false;
           return previousState;
         });
     } else {
-      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject.minAgeStatus = true;
-          return previousState;
-        }) :
-        this.setState((previousState) => {
-          previousState.ageErrorObject.maxAgeStatus = true;
+          previousState.ageErrorObject[`${identifier}Status`] = true;
           return previousState;
         });
     }
