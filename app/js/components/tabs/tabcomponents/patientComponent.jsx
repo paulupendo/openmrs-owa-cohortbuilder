@@ -300,16 +300,25 @@ class PatientComponent extends Component {
    * @memberof PatientComponent
    */
   handleSelectAge(event) {
-    const identifier = event.target.id;
     if (this.handleAgeValidation(event.target.value, event.target.id)) {
       this.setState({ [event.target.id]: event.target.value });
+      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject[`${identifier}Status`] = false;
+          previousState.ageErrorObject.minAgeStatus = false;
+          return previousState;
+        }) : 
+        this.setState((previousState) => {
+          previousState.ageErrorObject.maxAgeStatus = false;
           return previousState;
         });
     } else {
+      event.target.id === 'minAge' ?
       this.setState((previousState) => {
-          previousState.ageErrorObject[`${identifier}Status`] = true;
+          previousState.ageErrorObject.minAgeStatus = true;
+          return previousState;
+        }) :
+        this.setState((previousState) => {
+          previousState.ageErrorObject.maxAgeStatus = true;
           return previousState;
         });
     }
@@ -437,6 +446,7 @@ class PatientComponent extends Component {
             <span className="inline-label">And:</span>
             <div className={ageErrorObject ? "col-sm-3 error" : "col-sm-3"}>
               <input name="maxage" id="maxAge" className="form-control" onChange={this.handleSelectAge} value={this.maxAge} type="number" />
+              <span>{ageErrorObject.maxAgeStatus && ageErrorObject.maxAgeErrorMsg}</span>
             </div>
           </div>
           {startDate && !endDate || endDate && !startDate ?
