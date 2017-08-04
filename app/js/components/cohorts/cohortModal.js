@@ -67,11 +67,11 @@ class ActionsComponent extends Component {
                   this.setState(Object.assign({}, this.state, {
                     allCohort: [res, ...this.state.allCohort],
                     error: null,
-                    name :'', 
+                    name :'',
                     description: ''
                   }));
-                    
-                  $('#myCohort').modal('hide');          
+
+                  $('#myCohort').modal('hide');
                 });
     } else {
       this.setState({ error: "all fields are required" });
@@ -89,7 +89,7 @@ class ActionsComponent extends Component {
   resetError(){
     this.setState({
       error: '',
-      name :'', 
+      name :'',
       description: ''
     });
   }
@@ -156,7 +156,7 @@ class ActionsComponent extends Component {
     totalPage:  Math.ceil(res.results.length/this.state.perPage),
     cohortDescription: description
   }));
-}); 
+});
     };
   }
 
@@ -184,7 +184,7 @@ class ActionsComponent extends Component {
   const formattedData = this.preFromatForCSV(response.results);
   DownloadHelper.downloadCSV(formattedData, description);
   this.setState({ downloadJobIds: toSplice });
-}); 
+});
     };
   }
 
@@ -221,14 +221,14 @@ class ActionsComponent extends Component {
                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.resetError}><span aria-hidden="true">&times;</span></button>
                         <h4 className="modal-title" id="myCohortLabel">Save Cohorts</h4>
                     </div>
-                    <div className="modal-body" onSubmit={this.onSave}>  
+                    <div className="modal-body" onSubmit={this.onSave}>
                         <form className="form-horizontal" id="cohort" onSubmit={this.handleSubmit}>
                             { this.state.error ?
                             <div className="alert alert-danger text-center">{this.state.error}</div> : ""}
                             <div className="form-group">
                                 <label className="control-label col-sm-2">Query:</label>
                                 <div className="col-sm-8">
-                                    <input type="text" className="form-control" name="query" 
+                                    <input type="text" className="form-control" name="query"
                                         value={this.state.query}
                                     placeholder="Enter name" onChange={this.handleChange} />
                                 </div>
@@ -260,7 +260,7 @@ class ActionsComponent extends Component {
                     </div>
                 </div>
             </div>
-            
+
     );
   }
 }
